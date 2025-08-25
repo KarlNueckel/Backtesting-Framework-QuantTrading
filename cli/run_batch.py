@@ -20,7 +20,7 @@ import yaml
 
 # Import our framework modules
 from qb.data import load_csv       # loads price data (OHLCV) into pandas DataFrame
-from qb.strategy import SmaCrossover  # example strategy: buy/sell based on moving averages
+from qb.strategy import SmaCrossover, BuyAndHold, RSI, BollingerBands  # strategies: SMA crossover, buy & hold, RSI, and Bollinger Bands
 from qb.backtester import Backtester  # runs the backtest "simulation loop"
 from qb.metrics import equity_stats   # calculates performance metrics (returns, sharpe, etc.)
 
@@ -44,7 +44,17 @@ def run_one(ticker: str, config_path: str) -> dict:
     df = load_csv(f"data/{ticker}.csv")
 
     # Build the strategy object with chosen parameters
-    strat = SmaCrossover(**cfg["params"])
+    strategy_name = cfg.get("name", "sma_crossover")
+    if strategy_name == "sma_crossover":
+        strat = SmaCrossover(**cfg["params"])
+    elif strategy_name == "buy_and_hold":
+        strat = BuyAndHold(**cfg["params"])
+    elif strategy_name == "rsi":
+        strat = RSI(**cfg["params"])
+    elif strategy_name == "bollinger":
+        strat = BollingerBands(**cfg["params"])
+    else:
+        raise ValueError(f"Unknown strategy: {strategy_name}")
 
     # Create the backtester, starting with $100,000 "pretend money"
     bt = Backtester(df, strat, initial_cash=cfg.get("initial_cash", 100_000))
@@ -78,6 +88,8 @@ if __name__ == "__main__":
     print("\n=== Batch Backtest Results ===")
     print(df.to_string(index=False))
 
-    # Save results to CSV so you can open them later or plot in a notebook
-    df.to_csv("batch_stats.csv", index=False)
-    print("\nSaved results to batch_stats.csv")
+    # Save results to CSV with strategy name in filename
+    strategy_name = yaml.safe_load(open(args.config)).get("name", "unknown")
+    output_file = f"batch_stats_{strategy_name}.csv"
+    df.to_csv(output_file, index=False)
+    print(f"\nSaved results to {output_file}")

@@ -1,0 +1,13 @@
+# RSI mean-reversion strategy
+
+
+
+# # RSI (Relative Strength Index) measures momentum by comparing recent gains vs losses.
+# Values below 30 suggest oversold (buy), above 70 suggest overbought (sell).
+name: rsi
+params:
+  period: 14     # RSI lookback length
+  lower: 30      # oversold threshold -> BUY
+  upper: 70      # overbought threshold -> SELL
+  allocate: 1.0  # invest 100% of equity on BUY
+initial_cash: 100000

@@ -1,0 +1,5 @@
+# Buy & Hold baseline (no timing logic)
+name: buy_and_hold
+params:
+  allocate: 1.0   # invest 100% of the portfolio on the first bar
+initial_cash: 100000

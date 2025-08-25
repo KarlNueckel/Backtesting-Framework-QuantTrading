@@ -1,0 +1,16 @@
+# Bollinger Bands mean-reversion strategy
+#
+# Idea:
+#   - Middle band = moving average of the last N days.
+#   - Upper/lower bands = middle ± (num_std * standard deviation).
+#   - Buy when price touches the lower band (cheap/oversold).
+#   - Sell when price touches the upper band (expensive/overbought).
+
+name: bollinger
+
+params:
+  window: 20        # how many days to calculate the moving average (default: 20)
+  num_std: 2.0      # number of standard deviations for the bands (default: 2)
+  allocate: 1.0     # fraction of portfolio to invest when buying (1.0 = all-in)
+
+initial_cash: 100000

@@ -1,5 +1,7 @@
 # Strategy configuration file for Simple Moving Average (SMA) Crossover
 #
+#SMA - Simple Moving Average
+
 # The idea:
 #   - Calculate two moving averages of price (fast and slow).
 #   - When the fast MA rises above the slow MA → BUY signal.
