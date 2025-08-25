@@ -1,0 +1,30 @@
+# Strategy configuration file for Simple Moving Average (SMA) Crossover
+#
+# The idea:
+#   - Calculate two moving averages of price (fast and slow).
+#   - When the fast MA rises above the slow MA → BUY signal.
+#   - When the fast MA falls below the slow MA → SELL signal.
+
+# Fast MA rises above Slow MA → BUY (golden cross)
+
+# Means the short-term price trend is stronger than the long-term trend.
+
+# Interpreted as the market starting an upward trend.
+
+# Fast MA falls below Slow MA → SELL (death cross)
+
+# Means the short-term price is weakening compared to the long-term.
+
+# Interpreted as the market entering a downward trend.
+#
+# This is one of the most basic "trend-following" strategies in trading.
+
+name: sma_crossover   # strategy name
+
+params:
+  fast: 20            # "fast" moving average length (short-term trend, e.g. 20 days)
+  slow: 50            # "slow" moving average length (long-term trend, e.g. 50 days)
+  allocate: 1.0       # how much of your portfolio to put into the trade (1.0 = 100%)
+
+# Starting cash for the backtest (pretend money)
+initial_cash: 100000
