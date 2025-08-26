@@ -1,0 +1,351 @@
+#!/usr/bin/env python3
+"""
+Script to create Jupyter notebooks for each strategy
+"""
+
+import os
+import json
+
+# Strategy configurations
+STRATEGIES = [
+    {
+        'filename': '01_buy_and_hold.ipynb',
+        'name': 'Buy & Hold',
+        'class': 'BuyAndHold',
+        'yaml_file': 'buy_and_hold.yaml',
+        'description': 'Buy once at the beginning and hold until the end. This serves as a baseline comparison for other strategies.',
+        'parameters': ['Allocate: 100% of portfolio']
+    },
+    {
+        'filename': '02_sma_crossover.ipynb',
+        'name': 'SMA Crossover',
+        'class': 'SmaCrossover',
+        'yaml_file': 'sma_crossover.yaml',
+        'description': 'Buy when fast MA crosses above slow MA (golden cross), sell when fast MA crosses below slow MA (death cross).',
+        'parameters': ['Fast MA: 20 days', 'Slow MA: 50 days', 'Allocate: 100% of portfolio']
+    },
+    {
+        'filename': '03_rsi.ipynb',
+        'name': 'RSI Mean Reversion',
+        'class': 'RSI',
+        'yaml_file': 'rsi.yaml',
+        'description': 'Buy when RSI is oversold (below 30), sell when RSI is overbought (above 70).',
+        'parameters': ['Period: 14 days', 'Lower threshold: 30', 'Upper threshold: 70', 'Allocate: 100% of portfolio']
+    },
+    {
+        'filename': '04_bollinger_bands.ipynb',
+        'name': 'Bollinger Bands',
+        'class': 'BollingerBands',
+        'yaml_file': 'bollinger.yaml',
+        'description': 'Buy when price touches the lower band (oversold), sell when price touches the upper band (overbought).',
+        'parameters': ['Window: 20 days', 'Standard deviations: 2.0', 'Allocate: 100% of portfolio']
+    },
+    {
+        'filename': '05_ma200.ipynb',
+        'name': 'MA200 Trend Following',
+        'class': 'MA200',
+        'yaml_file': 'MA200.yaml',
+        'description': 'Buy when price is above the 200-day moving average (uptrend), sell when price is below the 200-day moving average (downtrend).',
+        'parameters': ['Window: 200 days', 'Allocate: 100% of portfolio', 'Buffer: 0%']
+    },
+    {
+        'filename': '06_momentum.ipynb',
+        'name': 'Momentum',
+        'class': 'Momentum',
+        'yaml_file': 'momentum.yaml',
+        'description': 'Buy when stock has been going up (positive momentum), sell when stock has been going down (negative momentum).',
+        'parameters': ['Lookback: 90 days', 'Allocate: 100% of portfolio']
+    },
+    {
+        'filename': '07_atr_trailing_stop.ipynb',
+        'name': 'ATR Trailing Stop',
+        'class': 'ATRTrailingStop',
+        'yaml_file': 'atr_trailing.yaml',
+        'description': 'Uses ATR to set dynamic trailing stops that move up as price rises. Allows cutting losers fast, riding winners long.',
+        'parameters': ['Window: 14 days', 'Multiplier: 3.0', 'Allocate: 100% of portfolio']
+    },
+    {
+        'filename': '08_donchian_channel.ipynb',
+        'name': 'Donchian Channel',
+        'class': 'DonchianChannel',
+        'yaml_file': 'donchian.yaml',
+        'description': 'Buy when price breaks above the N-day high (uptrend breakout), sell when price breaks below the N-day low (downtrend breakout).',
+        'parameters': ['Window: 20 days', 'Allocate: 100% of portfolio', 'Tolerance: 1%']
+    }
+]
+
+def create_notebook_content(strategy):
+    """Create the notebook content for a strategy"""
+    
+    cells = [
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                f"# Strategy Analysis: {strategy['name']}\n",
+                "\n",
+                f"This notebook provides a detailed analysis of the {strategy['name']} trading strategy.\n",
+                "\n",
+                "## Strategy Overview\n",
+                "\n",
+                f"{strategy['description']}\n",
+                "\n",
+                "### Parameters\n"
+            ] + [f"- {param}\n" for param in strategy['parameters']]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Import required libraries\n",
+                "import sys\n",
+                "sys.path.append('..')\n",
+                "\n",
+                "import pandas as pd\n",
+                "import numpy as np\n",
+                "import matplotlib.pyplot as plt\n",
+                "import seaborn as sns\n",
+                "import yaml\n",
+                "from datetime import datetime\n",
+                "\n",
+                "# Import our framework\n",
+                "from qb.data import load_csv\n",
+                f"from qb.strategy import {strategy['class']}\n",
+                "from qb.backtester import Backtester\n",
+                "from qb.metrics import equity_stats\n",
+                "\n",
+                "# Set plotting style\n",
+                "plt.style.use('seaborn-v0_8')\n",
+                "sns.set_palette(\"husl\")\n",
+                "plt.rcParams['figure.figsize'] = (12, 8)"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## Load Data and Strategy Configuration"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Load data\n",
+                "ticker = 'GOOGL'\n",
+                "data = load_csv(f'../data/{ticker}.csv')\n",
+                "print(f\"Loaded {len(data)} days of {ticker} data\")\n",
+                "print(f\"Date range: {data.index[0]} to {data.index[-1]}\")\n",
+                "print(f\"Price range: ${data['Close'].min():.2f} to ${data['Close'].max():.2f}\")\n",
+                "\n",
+                "# Load strategy configuration\n",
+                f"with open('../strategies/{strategy['yaml_file']}', 'r') as f:\n",
+                "    config = yaml.safe_load(f)\n",
+                "\n",
+                "print(f\"\\nStrategy: {config['name']}\")\n",
+                "print(f\"Parameters: {config['params']}\")\n",
+                "print(f\"Initial cash: ${config['initial_cash']:,}\")"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## Generate Trading Signals"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Create strategy instance\n",
+                f"strategy = {strategy['class']}(**config['params'])\n",
+                "\n",
+                "# Generate signals\n",
+                "signals = strategy.generate_signals(data)\n",
+                "\n",
+                "# Analyze signals\n",
+                "buy_signals = (signals == 1).sum()\n",
+                "sell_signals = (signals == -1).sum()\n",
+                "hold_signals = (signals == 0).sum()\n",
+                "\n",
+                "print(f\"Signal Analysis:\")\n",
+                "print(f\"- Buy signals: {buy_signals}\")\n",
+                "print(f\"- Sell signals: {sell_signals}\")\n",
+                "print(f\"- Hold signals: {hold_signals}\")\n",
+                "print(f\"- Total trading days: {buy_signals + sell_signals}\")\n",
+                "\n",
+                "# Show first few signals\n",
+                "signal_df = pd.DataFrame({\n",
+                "    'Date': data.index,\n",
+                "    'Close': data['Close'],\n",
+                "    'Signal': signals\n",
+                "})\n",
+                "signal_df['Signal_Type'] = signal_df['Signal'].map({1: 'BUY', -1: 'SELL', 0: 'HOLD'})\n",
+                "print(f\"\\nFirst 10 signals:\")\n",
+                "print(signal_df[signal_df['Signal'] != 0].head(10))"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## Run Backtest"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Create backtester\n",
+                "backtester = Backtester(data, strategy, initial_cash=config['initial_cash'])\n",
+                "\n",
+                "# Run backtest\n",
+                "results = backtester.run()\n",
+                "\n",
+                "# Calculate performance metrics\n",
+                "stats = equity_stats(results['equity'])\n",
+                "\n",
+                "print(\"Performance Metrics:\")\n",
+                "print(f\"- Total Return: {stats['total_return']:.2%}\")\n",
+                "print(f\"- Annualized Return: {stats['annualized_return']:.2%}\")\n",
+                "print(f\"- Volatility: {stats['volatility']:.2%}\")\n",
+                "print(f\"- Sharpe Ratio: {stats['sharpe']:.3f}\")\n",
+                "print(f\"- Max Drawdown: {stats['max_drawdown']:.2%}\")\n",
+                "print(f\"- Win Rate: {stats['win_rate']:.2%}\")\n",
+                "print(f\"- Profit Factor: {stats['profit_factor']:.2f}\")"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## Visualize Equity Curve and Signals"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Create comprehensive visualization\n",
+                "fig, axes = plt.subplots(3, 1, figsize=(15, 12))\n",
+                f"fig.suptitle('GOOGL - {strategy['name']} Strategy Analysis', fontsize=16, fontweight='bold')\n",
+                "\n",
+                "# Plot 1: Price and Signals\n",
+                "axes[0].plot(data.index, data['Close'], label='Close Price', alpha=0.7)\n",
+                "buy_points = data.index[signals == 1]\n",
+                "sell_points = data.index[signals == -1]\n",
+                "axes[0].scatter(buy_points, data.loc[buy_points, 'Close'], \n",
+                "                color='green', marker='^', s=100, label='Buy Signal', alpha=0.8)\n",
+                "axes[0].scatter(sell_points, data.loc[sell_points, 'Close'], \n",
+                "                color='red', marker='v', s=100, label='Sell Signal', alpha=0.8)\n",
+                "axes[0].set_title('Price Chart with Trading Signals')\n",
+                "axes[0].set_ylabel('Price ($)')\n",
+                "axes[0].legend()\n",
+                "axes[0].grid(True, alpha=0.3)\n",
+                "\n",
+                "# Plot 2: Equity Curve\n",
+                "axes[1].plot(results['equity'].index, results['equity'], label='Portfolio Value', linewidth=2)\n",
+                "axes[1].axhline(y=config['initial_cash'], color='red', linestyle='--', alpha=0.7, label='Initial Investment')\n",
+                "axes[1].set_title('Equity Curve')\n",
+                "axes[1].set_ylabel('Portfolio Value ($)')\n",
+                "axes[1].legend()\n",
+                "axes[1].grid(True, alpha=0.3)\n",
+                "\n",
+                "# Plot 3: Drawdown\n",
+                "drawdown = (results['equity'] - results['equity'].cummax()) / results['equity'].cummax()\n",
+                "axes[2].fill_between(drawdown.index, drawdown * 100, 0, alpha=0.3, color='red')\n",
+                "axes[2].plot(drawdown.index, drawdown * 100, color='red', alpha=0.7)\n",
+                "axes[2].set_title('Drawdown')\n",
+                "axes[2].set_ylabel('Drawdown (%)')\n",
+                "axes[2].set_xlabel('Date')\n",
+                "axes[2].grid(True, alpha=0.3)\n",
+                "\n",
+                "plt.tight_layout()\n",
+                "plt.show()"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## Strategy Summary\n",
+                "\n",
+                "### Key Insights:\n",
+                "- [Add insights specific to this strategy]\n",
+                "- [Performance characteristics]\n",
+                "- [Risk/reward profile]\n",
+                "\n",
+                "### Recommendations:\n",
+                "- [Parameter optimization suggestions]\n",
+                "- [Market conditions where this strategy works best]\n",
+                "- [Risk management considerations]\n",
+                "\n",
+                "### Next Steps:\n",
+                "- Compare with other strategies\n",
+                "- Test on different time periods\n",
+                "- Optimize parameters"
+            ]
+        }
+    ]
+    
+    notebook = {
+        "cells": cells,
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3"
+            },
+            "language_info": {
+                "codemirror_mode": {
+                    "name": "ipython",
+                    "version": 3
+                },
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbconvert_exporter": "python",
+                "pygments_lexer": "ipython3",
+                "version": "3.8.0"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 4
+    }
+    
+    return notebook
+
+def main():
+    """Create notebooks for all strategies"""
+    notebooks_dir = "notebooks"
+    
+    print("Creating Jupyter notebooks for all strategies...")
+    
+    for strategy in STRATEGIES:
+        filename = os.path.join(notebooks_dir, strategy['filename'])
+        notebook_content = create_notebook_content(strategy)
+        
+        with open(filename, 'w') as f:
+            json.dump(notebook_content, f, indent=1)
+        
+        print(f"Created: {strategy['filename']}")
+    
+    print(f"\nCreated {len(STRATEGIES)} notebooks in {notebooks_dir}/")
+    print("To use the notebooks:")
+    print("1. Install Jupyter: pip install jupyter")
+    print("2. Start Jupyter: jupyter notebook")
+    print("3. Navigate to the notebooks directory")
+
+if __name__ == "__main__":
+    main()

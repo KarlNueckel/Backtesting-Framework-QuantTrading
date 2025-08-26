@@ -1,0 +1,10 @@
+#if stock has been going up buy it 
+# if stock has been going down sell it 
+# opposite of RSI 
+
+# Momentum (Rate-of-Change) strategy
+name: momentum
+params:
+  lookback: 90     # compare price to 90 days ago
+  allocate: 1.0    # invest 100% on BUY
+initial_cash: 100000

@@ -20,7 +20,7 @@ import yaml
 
 # Import our framework modules
 from qb.data import load_csv       # loads price data (OHLCV) into pandas DataFrame
-from qb.strategy import SmaCrossover, BuyAndHold, RSI, BollingerBands  # strategies: SMA crossover, buy & hold, RSI, and Bollinger Bands
+from qb.strategy import SmaCrossover, BuyAndHold, RSI, BollingerBands, MA200, Momentum, ATRTrailingStop, DonchianChannel  # strategies: SMA crossover, buy & hold, RSI, Bollinger Bands, MA200, Momentum, ATR Trailing Stop, and Donchian Channel
 from qb.backtester import Backtester  # runs the backtest "simulation loop"
 from qb.metrics import equity_stats   # calculates performance metrics (returns, sharpe, etc.)
 
@@ -53,6 +53,14 @@ def run_one(ticker: str, config_path: str) -> dict:
         strat = RSI(**cfg["params"])
     elif strategy_name == "bollinger":
         strat = BollingerBands(**cfg["params"])
+    elif strategy_name == "ma200":
+        strat = MA200(**cfg["params"])
+    elif strategy_name == "momentum":
+        strat = Momentum(**cfg["params"])
+    elif strategy_name == "atr_trailing":
+        strat = ATRTrailingStop(**cfg["params"])
+    elif strategy_name == "donchian":
+        strat = DonchianChannel(**cfg["params"])
     else:
         raise ValueError(f"Unknown strategy: {strategy_name}")
 

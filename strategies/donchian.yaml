@@ -1,0 +1,15 @@
+# Look at the highest high and lowest low over the past N days.
+
+# If today’s price breaks above the past N-day high → BUY (trend breakout).
+
+# If today’s price breaks below the past N-day low → SELL (downtrend breakout).
+
+
+
+# Donchian Channel Breakout strategy
+name: donchian
+params:
+  window: 20       # lookback window for high/low channel
+  allocate: 1.0    # invest fully on breakouts
+  tolerance: 0.01  # 1% tolerance for breakout detection
+initial_cash: 100000

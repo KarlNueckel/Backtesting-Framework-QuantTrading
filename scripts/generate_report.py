@@ -22,7 +22,21 @@ try:
     plt.style.use('seaborn-v0_8')
 except:
     plt.style.use('default')
-sns.set_palette("husl")
+
+# Define a distinct color palette for strategies
+STRATEGY_COLORS = {
+    'buy_and_hold': '#1f77b4',      # Blue
+    'sma_crossover': '#ff7f0e',     # Orange
+    'rsi': '#2ca02c',               # Green
+    'bollinger': '#d62728',         # Red
+    'ma200': '#9467bd',             # Purple
+    'momentum': '#8c564b',          # Brown
+    'atr_trailing': '#e377c2',      # Pink
+    'donchian': '#7f7f7f'           # Gray
+}
+
+# Set a custom color palette
+sns.set_palette(list(STRATEGY_COLORS.values()))
 
 class ReportGenerator:
     def __init__(self):
@@ -87,8 +101,9 @@ class ReportGenerator:
         # Create pivot table for plotting
         pivot_data = self.all_data.pivot(index='ticker', columns='strategy', values='total_return')
         
-        # Create bar chart
-        ax = pivot_data.plot(kind='bar', figsize=(14, 8))
+        # Create bar chart with custom colors
+        colors = [STRATEGY_COLORS.get(strategy, '#000000') for strategy in pivot_data.columns]
+        ax = pivot_data.plot(kind='bar', figsize=(14, 8), color=colors)
         plt.title('Total Returns by Strategy and Stock', fontsize=16, fontweight='bold')
         plt.xlabel('Stock Ticker', fontsize=12)
         plt.ylabel('Total Return (Decimal)', fontsize=12)
@@ -123,11 +138,12 @@ class ReportGenerator:
         
         plt.figure(figsize=(12, 8))
         
-        # Create scatter plot
+        # Create scatter plot with custom colors
         for strategy in self.all_data['strategy'].unique():
             strategy_data = self.all_data[self.all_data['strategy'] == strategy]
+            color = STRATEGY_COLORS.get(strategy, '#000000')
             plt.scatter(strategy_data['volatility'], strategy_data['total_return'], 
-                       label=strategy, s=100, alpha=0.7)
+                       label=strategy, s=100, alpha=0.7, color=color)
             
             # Add ticker labels
             for _, row in strategy_data.iterrows():
@@ -160,26 +176,29 @@ class ReportGenerator:
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
         fig.suptitle('Strategy Performance Comparison (Averages)', fontsize=16, fontweight='bold')
         
+        # Get colors for each strategy
+        colors = [STRATEGY_COLORS.get(strategy, '#000000') for strategy in strategy_avg.index]
+        
         # Total Return
-        strategy_avg['total_return'].plot(kind='bar', ax=axes[0,0], color='green', alpha=0.7)
+        strategy_avg['total_return'].plot(kind='bar', ax=axes[0,0], color=colors, alpha=0.7)
         axes[0,0].set_title('Average Total Return')
         axes[0,0].set_ylabel('Total Return')
         axes[0,0].tick_params(axis='x', rotation=45)
         
         # Volatility
-        strategy_avg['volatility'].plot(kind='bar', ax=axes[0,1], color='red', alpha=0.7)
+        strategy_avg['volatility'].plot(kind='bar', ax=axes[0,1], color=colors, alpha=0.7)
         axes[0,1].set_title('Average Volatility')
         axes[0,1].set_ylabel('Volatility')
         axes[0,1].tick_params(axis='x', rotation=45)
         
         # Sharpe Ratio
-        strategy_avg['sharpe'].plot(kind='bar', ax=axes[1,0], color='blue', alpha=0.7)
+        strategy_avg['sharpe'].plot(kind='bar', ax=axes[1,0], color=colors, alpha=0.7)
         axes[1,0].set_title('Average Sharpe Ratio')
         axes[1,0].set_ylabel('Sharpe Ratio')
         axes[1,0].tick_params(axis='x', rotation=45)
         
         # Max Drawdown
-        strategy_avg['max_drawdown'].plot(kind='bar', ax=axes[1,1], color='orange', alpha=0.7)
+        strategy_avg['max_drawdown'].plot(kind='bar', ax=axes[1,1], color=colors, alpha=0.7)
         axes[1,1].set_title('Average Max Drawdown')
         axes[1,1].set_ylabel('Max Drawdown')
         axes[1,1].tick_params(axis='x', rotation=45)
@@ -246,9 +265,9 @@ class ReportGenerator:
         with open(html_path, 'w', encoding='utf-8') as f:
             f.write(html_content)
         
-        print(f"\n📊 Report generated successfully!")
-        print(f"📁 HTML Report: {html_path}")
-        print(f"📈 Charts saved in: {self.output_dir}")
+        print(f"\nReport generated successfully!")
+        print(f"HTML Report: {html_path}")
+        print(f"Charts saved in: {self.output_dir}")
         
         return html_path
     
@@ -411,10 +430,10 @@ class ReportGenerator:
         # Step 3: Generate report
         if not self.all_data.empty:
             report_path = self.generate_html_report()
-            print(f"\n✅ Report generation complete!")
-            print(f"🌐 Open {report_path} in your web browser to view the report")
+            print(f"\nReport generation complete!")
+            print(f"Open {report_path} in your web browser to view the report")
         else:
-            print("❌ No data found to generate report")
+            print("No data found to generate report")
 
 if __name__ == "__main__":
     generator = ReportGenerator()

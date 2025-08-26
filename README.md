@@ -4,12 +4,13 @@ A comprehensive Python framework for backtesting quantitative trading strategies
 
 ## Features
 
-- **Multiple Trading Strategies**: Buy & Hold, SMA Crossover, RSI, Bollinger Bands
+- **Multiple Trading Strategies**: 8 different strategies with distinct approaches
 - **Comprehensive Metrics**: Sharpe ratio, maximum drawdown, returns, volatility
 - **Automated Reporting**: HTML reports with interactive charts and performance visualizations
 - **Batch Processing**: Run multiple strategies across different parameters
 - **Data Management**: Automated data fetching and caching
 - **CLI Interface**: Easy-to-use command-line tools
+- **Jupyter Notebooks**: Detailed analysis notebooks for each strategy
 
 ## Project Structure
 
@@ -24,7 +25,10 @@ Backtesting-Framework-QuantTrading/
 │   ├── buy_and_hold.yaml
 │   ├── sma_crossover.yaml
 │   ├── rsi.yaml
-│   └── bollinger.yaml
+│   ├── bollinger.yaml
+│   ├── MA200.yaml
+│   ├── momentum.yaml
+│   └── atr_trailing.yaml
 ├── scripts/              # Utility scripts
 │   ├── fetch_data.py     # Data fetching
 │   ├── generate_report.py # Report generation
@@ -59,10 +63,16 @@ Backtesting-Framework-QuantTrading/
 
 ## Available Strategies
 
-- **Buy & Hold**: Simple buy and hold strategy
-- **SMA Crossover**: Moving average crossover signals
-- **RSI**: Relative Strength Index strategy
-- **Bollinger Bands**: Mean reversion using Bollinger Bands
+| Strategy | Type | Description | Key Parameters |
+|----------|------|-------------|----------------|
+| **Buy & Hold** | Baseline | Buy once at the beginning and hold until the end | Allocate: 100% |
+| **SMA Crossover** | Trend Following | Buy when fast MA crosses above slow MA (golden cross) | Fast: 20d, Slow: 50d |
+| **RSI** | Mean Reversion | Buy when oversold (RSI < 30), sell when overbought (RSI > 70) | Period: 14d, Thresholds: 30/70 |
+| **Bollinger Bands** | Mean Reversion | Buy at lower band, sell at upper band | Window: 20d, Std Dev: 2.0 |
+| **MA200** | Trend Following | Buy above 200-day MA, sell below 200-day MA | Window: 200d |
+| **Momentum** | Trend Following | Buy on positive momentum, sell on negative momentum | Lookback: 90d |
+| **ATR Trailing Stop** | Risk Management | Dynamic trailing stops using ATR for position sizing | Window: 14d, Multiplier: 3.0 |
+| **Donchian Channel** | Breakout | Buy on upper channel breakout, sell on lower channel breakout | Window: 20d, Tolerance: 1% |
 
 ## Configuration
 

@@ -1,0 +1,13 @@
+#Compute the 200-day Simple Moving Average
+# If price > MA200 → be invested (BUY/hold).
+
+# If price < MA200 → be in cash (SELL).
+
+
+# Long-only MA200 trend filter
+name: ma200
+params:
+  window: 200       # the classic 200-day moving average
+  allocate: 1.0     # invest 100% when above the filter
+  buffer_pct: 0.0   # set to 0.01 (1%) to reduce whipsaws 
+initial_cash: 100000

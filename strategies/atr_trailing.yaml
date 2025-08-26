@@ -1,0 +1,33 @@
+# ATR = Average True Range, a measure of volatility (how much the stock moves daily).
+
+# Instead of exiting on a crossover or RSI, you ride the trade until price falls a certain multiple of ATR below its peak -> then SELL.
+
+# This lets you "cut losers fast, ride winners long."
+
+
+# Example
+
+# NVDA trade enters at $500.
+
+# ATR(14) = $12.
+
+# Stop distance = 3 x 12 = $36.
+
+# As price rises, we track the peak (highest price since entry).
+
+# Say peak reaches $560.
+
+# Stop = 560 - 36 = $524.
+
+# If NVDA falls from 560 down to 524 -> SELL (stop hit).
+
+# If NVDA keeps rising (say to 600), peak updates -> stop moves up to 600 - 36 = $564.
+
+
+# ATR Trailing Stop strategy
+name: atr_trailing
+params:
+  window: 14        # ATR lookback window
+  multiplier: 3.0   # stop distance (3 * ATR below peak)
+  allocate: 1.0     # invest all when in trade
+initial_cash: 100000

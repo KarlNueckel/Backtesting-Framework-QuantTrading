@@ -28,7 +28,7 @@ class StrategyRunner:
         strategy_files = glob.glob(pattern)
         
         self.available_strategies = [os.path.basename(f) for f in strategy_files]
-        print(f"📋 Found {len(self.available_strategies)} strategies:")
+        print(f"Found {len(self.available_strategies)} strategies:")
         for strategy in self.available_strategies:
             print(f"  - {strategy}")
     
@@ -39,13 +39,13 @@ class StrategyRunner:
         
         # Extract ticker symbols from filenames
         self.available_assets = [os.path.basename(f).replace('.csv', '') for f in asset_files]
-        print(f"📈 Found {len(self.available_assets)} assets:")
+        print(f"Found {len(self.available_assets)} assets:")
         for asset in self.available_assets:
             print(f"  - {asset}")
     
     def run_strategy(self, strategy_file, assets):
         """Run a single strategy on all assets"""
-        print(f"\n🚀 Running {strategy_file}...")
+        print(f"\nRunning {strategy_file}...")
         
         # Build the command
         cmd = [
@@ -58,10 +58,10 @@ class StrategyRunner:
         try:
             # Run the command
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-            print(f"✅ {strategy_file} completed successfully")
+            print(f"{strategy_file} completed successfully")
             return True
         except subprocess.CalledProcessError as e:
-            print(f"❌ Error running {strategy_file}: {e}")
+            print(f"Error running {strategy_file}: {e}")
             print(f"Error output: {e.stderr}")
             return False
     
@@ -93,23 +93,23 @@ class StrategyRunner:
                 successful_runs += 1
         
         print("\n" + "=" * 60)
-        print(f"📊 Strategy Testing Complete!")
-        print(f"✅ Successful runs: {successful_runs}/{total_runs}")
+        print(f"Strategy Testing Complete!")
+        print(f"Successful runs: {successful_runs}/{total_runs}")
         
         return successful_runs > 0
     
     def generate_report(self):
         """Generate the comprehensive report"""
-        print("\n📋 Generating comprehensive report...")
+        print("\nGenerating comprehensive report...")
         
         try:
             # Run the report generator
             cmd = [sys.executable, "scripts/generate_report.py"]
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-            print("✅ Report generated successfully!")
+            print("Report generated successfully!")
             return True
         except subprocess.CalledProcessError as e:
-            print(f"❌ Error generating report: {e}")
+            print(f"Error generating report: {e}")
             print(f"Error output: {e.stderr}")
             return False
     
@@ -120,12 +120,12 @@ class StrategyRunner:
         # Find the most recent report
         reports_dir = "reports"
         if not os.path.exists(reports_dir):
-            print("❌ Reports directory not found")
+            print("Reports directory not found")
             return False
         
         report_files = glob.glob(os.path.join(reports_dir, "backtesting_report_*.html"))
         if not report_files:
-            print("❌ No report files found")
+            print("No report files found")
             return False
         
         # Get the most recent report
@@ -134,29 +134,29 @@ class StrategyRunner:
         try:
             # Open the report
             subprocess.run(["start", latest_report], shell=True, check=True)
-            print(f"✅ Opened report: {os.path.basename(latest_report)}")
+            print(f"Opened report: {os.path.basename(latest_report)}")
             return True
         except subprocess.CalledProcessError as e:
-            print(f"❌ Error opening report: {e}")
+            print(f"Error opening report: {e}")
             return False
     
     def run(self):
         """Run the complete process"""
-        print("🚀 Starting All Strategies Runner")
+        print("Starting All Strategies Runner")
         print("=" * 60)
         
         # Step 1: Run all strategies
         success = self.run_all_strategies()
         
         if not success:
-            print("❌ Strategy testing failed. Exiting.")
+            print("Strategy testing failed. Exiting.")
             return
         
         # Step 2: Generate report
         report_success = self.generate_report()
         
         if not report_success:
-            print("❌ Report generation failed.")
+            print("Report generation failed.")
             return
         
         # Step 3: Open report
