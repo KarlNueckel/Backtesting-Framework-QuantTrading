@@ -11,6 +11,10 @@ reports/*.pdf
 # Batch statistics files (generated output)
 batch_stats*.csv
 
+# Strategy comparison outputs
+strategy_comparison_*.csv
+strategy_comparison_*.png
+
 # Python
 __pycache__/
 *.py[cod]

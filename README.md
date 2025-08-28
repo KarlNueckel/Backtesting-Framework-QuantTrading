@@ -21,45 +21,74 @@ Backtesting-Framework-QuantTrading/
 │   ├── data.py           # Data loading and management
 │   ├── metrics.py        # Performance calculations
 │   └── strategy.py       # Strategy base classes
-├── strategies/           # Strategy configurations
+├── strategies/           # Strategy configurations (YAML files)
 │   ├── buy_and_hold.yaml
 │   ├── sma_crossover.yaml
 │   ├── rsi.yaml
 │   ├── bollinger.yaml
 │   ├── MA200.yaml
 │   ├── momentum.yaml
-│   └── atr_trailing.yaml
+│   ├── atr_trailing.yaml
+│   └── donchian.yaml
 ├── scripts/              # Utility scripts
 │   ├── fetch_data.py     # Data fetching
 │   ├── generate_report.py # Report generation
-│   └── run_all_strategies.py # Batch processing
+│   ├── run_all_strategies.py # Batch processing
+│   ├── create_notebooks.py # Jupyter notebook generation
+│   └── strategy_comparison.py # Strategy comparison
+├── tests/                # Test suite
+│   ├── test_strategies.py # Strategy tests
+│   └── test_backtester.py # Backtester tests
+├── notebooks/            # Jupyter notebooks for analysis
 ├── cli/                  # Command-line interface
 │   └── run_batch.py      # Batch execution CLI
 ├── data/                 # Stock data (gitignored)
-└── reports/              # Generated reports (gitignored)
+├── reports/              # Generated reports (gitignored)
+├── main.py               # Main entry point
+├── setup.py              # Package setup
+└── CONTRIBUTING.md       # Contributing guidelines
 ```
 
 ## Quick Start
 
-1. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Option 1: Using the Main Script (Recommended)
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-2. **Fetch Data**:
-   ```bash
-   python scripts/fetch_data.py
-   ```
+# Fetch stock data
+python main.py fetch-data
 
-3. **Run a Strategy**:
-   ```bash
-   python cli/run_batch.py --strategy sma_crossover --symbol SPY
-   ```
+# Run all strategies on all stocks
+python main.py run-all
 
-4. **Run All Strategies**:
-   ```bash
-   python scripts/run_all_strategies.py
-   ```
+# Compare all strategies on a specific stock
+python main.py compare --stock GOOGL
+
+# Generate comprehensive HTML report
+python main.py report
+
+# Run tests
+python main.py test
+```
+
+### Option 2: Using Individual Scripts
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Fetch data
+python scripts/fetch_data.py
+
+# Run a single strategy
+python cli/run_batch.py --strategy sma_crossover --symbol SPY
+
+# Run all strategies
+python scripts/run_all_strategies.py
+
+# Generate report
+python scripts/generate_report.py
+```
 
 ## Available Strategies
 
